@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Business Directory — Find Businesses Near You</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <header class="hero">
+        <div class="container">
+            <h1>Local Business Directory</h1>
+            <p class="tagline">Find trusted local businesses in your suburb</p>
+            <div class="search-box" id="global-search">
+                <input
+                    type="text"
+                    id="search-input"
+                    placeholder="Search businesses, categories, or suburbs..."
+                    autocomplete="off"
+                >
+                <div id="search-results" class="search-results" hidden></div>
+            </div>
+            <div class="stats">
+                <span>{{ total_businesses }} businesses</span>
+                <span class="dot">·</span>
+                <span>{{ total_categories }} categories</span>
+                <span class="dot">·</span>
+                <span>{{ suburbs|length }} suburbs</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="suburbs-grid">
+            <h2>Browse by Suburb</h2>
+            <div class="grid">
+                {% for suburb in suburbs %}
+                <a href="suburb/{{ suburb.slug }}.html" class="suburb-card">
+                    <h3>{{ suburb.name }}</h3>
+                    <p class="suburb-state">{{ suburb.state }}</p>
+                    <div class="suburb-stats">
+                        <span>{{ suburb.categories|length }} categories</span>
+                        <span class="dot">·</span>
+                        {% set ns = namespace(count=0) %}
+                        {% for cat, businesses in suburb.categories.items() %}
+                            {% set ns.count = ns.count + businesses|length %}
+                        {% endfor %}
+                        <span>{{ ns.count }} businesses</span>
+                    </div>
+                    <div class="category-tags">
+                        {% for cat in suburb.categories.keys() %}
+                        <span class="tag">{{ cat }}</span>
+                        {% endfor %}
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Last updated: {{ generated }}</p>
+            <p>Online Directory Project</p>
+        </div>
+    </footer>
+
+    <script src="assets/js/search.js"></script>
+</body>
+</html>

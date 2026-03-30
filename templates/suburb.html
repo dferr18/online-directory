@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ suburb.name }} — Local Business Directory</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <header class="hero hero--suburb">
+        <div class="container">
+            <nav class="breadcrumb">
+                <a href="../index.html">Directory</a>
+                <span>/</span>
+                <span>{{ suburb.name }}</span>
+            </nav>
+            <h1>{{ suburb.name }}, {{ suburb.state }}</h1>
+            <p class="tagline">Local businesses in {{ suburb.name }}</p>
+            <div class="search-box" id="suburb-search">
+                <input
+                    type="text"
+                    id="search-input"
+                    placeholder="Search businesses in {{ suburb.name }}..."
+                    autocomplete="off"
+                    data-suburb="{{ suburb.slug }}"
+                >
+            </div>
+        </div>
+    </header>
+
+    <!-- Suburb navigation -->
+    <nav class="suburb-nav">
+        <div class="container">
+            {% for s in suburbs %}
+            <a href="{{ s.slug }}.html" class="suburb-nav-link {% if s.slug == suburb.slug %}active{% endif %}">
+                {{ s.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Category quick-jump -->
+        <div class="category-jump">
+            <h2>Categories</h2>
+            <div class="category-jump-links">
+                {% for category in suburb.categories.keys() %}
+                <a href="#cat-{{ loop.index }}" class="tag tag--link">{{ category }}
+                    <span class="tag-count">{{ suburb.categories[category]|length }}</span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Business listings by category -->
+        {% for category, businesses in suburb.categories.items() %}
+        <section class="category-section" id="cat-{{ loop.index }}">
+            <div class="category-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                <h2>{{ category }}</h2>
+                <span class="category-count">{{ businesses|length }} business{{ 'es' if businesses|length != 1 else '' }}</span>
+                <span class="toggle-icon">▾</span>
+            </div>
+            <div class="category-businesses">
+                {% for biz in businesses %}
+                <div class="business-card" data-name="{{ biz.name|lower }}" data-category="{{ category|lower }}">
+                    <div class="business-header">
+                        <h3>{{ biz.name }}</h3>
+                        {% if biz.rating != 'N/A' %}
+                        <div class="rating">
+                            <span class="stars">{{ '★' * (biz.rating|int) }}{{ '☆' * (5 - biz.rating|int) }}</span>
+                            <span class="rating-number">{{ biz.rating }}</span>
+                            {% if biz.total_reviews %}
+                            <span class="review-count">({{ biz.total_reviews }} reviews)</span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% if biz.status != 'OPERATIONAL' %}
+                    <div class="status-badge status--{{ biz.status|lower|replace(' ', '-') }}">
+                        {{ biz.status|replace('_', ' ')|title }}
+                    </div>
+                    {% endif %}
+                    <div class="business-details">
+                        <div class="detail">
+                            <span class="detail-icon">📍</span>
+                            <span>{{ biz.address }}</span>
+                        </div>
+                        {% if biz.phone != 'N/A' %}
+                        <div class="detail">
+                            <span class="detail-icon">📞</span>
+                            <a href="tel:{{ biz.phone }}">{{ biz.phone }}</a>
+                        </div>
+                        {% endif %}
+                        {% if biz.hours != 'N/A' and biz.hours != 'Hours not available' %}
+                        <div class="detail">
+                            <span class="detail-icon">🕐</span>
+                            <span class="hours">{{ biz.hours }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="business-links">
+                            {% if biz.website != 'N/A' %}
+                            <a href="{{ biz.website }}" target="_blank" rel="noopener" class="btn btn--website">Website</a>
+                            {% endif %}
+                            {% if biz.google_maps_url != 'N/A' %}
+                            <a href="{{ biz.google_maps_url }}" target="_blank" rel="noopener" class="btn btn--maps">Google Maps</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endfor %}
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Last updated: {{ generated }}</p>
+            <p><a href="../index.html">← Back to all suburbs</a></p>
+        </div>
+    </footer>
+
+    <script src="../assets/js/search.js"></script>
+</body>
+</html>
