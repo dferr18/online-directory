@@ -14,7 +14,7 @@ from jinja2 import Environment, FileSystemLoader
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_FILE = os.path.join(BASE_DIR, "data", "json", "directory.json")
-SITE_DIR = os.path.join(BASE_DIR, "site")
+SITE_DIR = os.path.join(BASE_DIR, "docs")
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 
 
